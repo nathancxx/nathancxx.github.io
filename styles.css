@@ -507,12 +507,15 @@ p {
 
 .work-card img {
   width: 100%;
-  height: clamp(280px, 28vw, 380px);
+  aspect-ratio: 5 / 4;
+  height: auto;
   object-fit: cover;
+  object-position: center 42%;
 }
 
 .large-work-card img {
-  height: clamp(280px, 28vw, 380px);
+  aspect-ratio: 5 / 4;
+  height: auto;
 }
 
 .work-card > div {
@@ -1171,11 +1174,6 @@ p {
   .data-proof {
     grid-column: 1 / -1;
     order: 2;
-  }
-
-  .large-work-card img,
-  .work-card img {
-    height: 310px;
   }
 
   .gallery-meta,
