@@ -10,6 +10,9 @@ const contentDir = path.join(root, "src", "content");
 const errors = [];
 const warnings = [];
 const allowedPhotographyTypes = ["corporate-private-events", "stage-work", "photoshoot", "wedding-rom"];
+const allowedContentTypes = ["embed", "case-study"];
+const allowedContentPlatforms = ["instagram", "tiktok", "linkedin"];
+const allowedSocialCategories = ["corporate", "lifestyle", "real-estate"];
 
 function fail(message) {
   errors.push(message);
@@ -140,8 +143,34 @@ async function validateDataProjects() {
   }
 }
 
+async function validateContentWork() {
+  const items = await readContentFiles("content-work", [".md", ".mdx"]);
+  for (const item of items) {
+    if (!item.data.title) warn(`Content item "${item.file}" has no title; filename fallback will be used.`);
+    if (item.data.publishStatus && !["draft", "published", "archived"].includes(String(item.data.publishStatus))) {
+      warn(`Content item "${item.file}" has invalid publishStatus; it will render as published.`);
+    }
+    if (item.data.contentType && !allowedContentTypes.includes(String(item.data.contentType))) {
+      warn(`Content item "${item.file}" has invalid contentType; embed fallback will be used.`);
+    }
+    if (item.data.platform && !allowedContentPlatforms.includes(String(item.data.platform))) {
+      warn(`Content item "${item.file}" has invalid platform; instagram fallback will be used.`);
+    }
+    const socialCategory = String(item.data.socialCategory || "");
+    if (socialCategory === "adult-education") {
+      warn(`Content item "${item.file}" uses legacy socialCategory "adult-education"; use "corporate" instead.`);
+    } else if (item.data.socialCategory && !allowedSocialCategories.includes(socialCategory)) {
+      warn(`Content item "${item.file}" has invalid socialCategory; lifestyle fallback will be used.`);
+    }
+    if (item.data.coverImage && !(await existsPublic(item.data.coverImage))) {
+      warn(`Content item "${item.file}" coverImage was not found: ${item.data.coverImage}`);
+    }
+  }
+}
+
 await validatePhotography();
 await validateDataProjects();
+await validateContentWork();
 
 for (const warning of warnings) console.warn(`Warning: ${warning}`);
 

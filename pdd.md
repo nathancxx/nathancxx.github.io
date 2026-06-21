@@ -65,6 +65,7 @@ Package manager: npm
 /photography
 /photography/corporate-events
 /photography/gallery/[slug]
+/content
 /data
 /data/project/[slug]
 /contact
@@ -84,6 +85,73 @@ The homepage should include:
 
 The hero should not overload the user with multiple competing CTAs. Photography and data CTAs should appear in their relevant sections.
 
+## 6.1 Social Media Page Requirements
+
+The site includes a top-level `/content/` page labelled as `Social media` in navigation and sitemap areas.
+
+The Social media page should be one public page for now, but the implementation should keep the general social media grid and featured case study as separate components so case studies can become standalone pages later.
+
+Page structure:
+
+- Hero
+- Category-filtered embed grid
+- Featured case study section
+- Contact CTA
+
+Content examples live in:
+
+```text
+src/content/content-work/[slug].mdx
+```
+
+Recommended frontmatter:
+
+```yaml
+title: Social Media Post
+date: 2026-06-19
+contentType: embed
+platform: instagram
+socialCategory: corporate
+publishStatus: published
+summary: Short description.
+guidedContext: Strategic angle, useful facts, client value, and metrics for AI-assisted copy.
+platformCaption: Optional caption or transcript context.
+embedHtml: "<blockquote>...</blockquote>"
+externalUrl: https://example.com
+coverImage: /images/example.webp
+services:
+  - Short-form editing
+tags:
+  - event-content
+```
+
+Social media embeds support AI-assisted body copy by default. Use `guidedContext` as the single AI guidance field for both strategic framing and factual context. Set `autoSummary: false` only when a specific embed should not be touched by the AI summary generator.
+
+Allowed `contentType` values:
+
+```text
+embed
+case-study
+```
+
+Allowed `platform` values:
+
+```text
+instagram
+tiktok
+linkedin
+```
+
+Allowed `socialCategory` values:
+
+```text
+corporate
+lifestyle
+real-estate
+```
+
+The Social media page should select `Corporate` by default. Tab order should be `Corporate`, `Lifestyle`, `Real estate`, then `All`.
+
 ## 7. Photography Page Requirements
 
 The Photography page should be a clean browsing page.
@@ -91,11 +159,11 @@ The Photography page should be a clean browsing page.
 It should show category tabs:
 
 ```text
-All
 Corporate & private events
 Stage work
 Photoshoot
 Wedding & ROM
+All
 ```
 
 Default selected tab:
@@ -104,7 +172,7 @@ Default selected tab:
 Corporate & private events
 ```
 
-The `All` tab shows every published gallery in reverse date order.
+The `All` tab sits at the rightmost end and shows every published gallery in reverse date order.
 
 The page should not over-explain the category system. Users should see the tabs and gallery cards immediately.
 
@@ -194,6 +262,7 @@ Smallest useful file:
 ---
 title: My Event
 photographyType: corporate-private-events
+guidedContext: "The angle, useful facts, client value, venue, services, and moments the AI summary should use."
 ---
 
 Optional write-up here.
@@ -213,6 +282,8 @@ featured: false
 publishStatus: published
 summary: Short card summary.
 description: Longer gallery description.
+guidedContext: "Strategic angle, useful facts, client value, venue, services, and moments for AI-assisted gallery summary."
+autoSummary: true
 services:
   - Event photography
   - Speaker coverage
@@ -260,6 +331,12 @@ Optional write-up here.
 
 `description`
 : Longer gallery-page description.
+
+`guidedContext`
+: Single guidance field for AI-assisted summaries. Use this for strategy, factual details, client context, deliverables, audience, useful metrics, and notable moments.
+
+`autoSummary`
+: AI summaries are enabled implicitly for photography galleries. Set this to `false` only when a gallery should not be touched by the AI summary generator.
 
 `services`
 : List of services provided.

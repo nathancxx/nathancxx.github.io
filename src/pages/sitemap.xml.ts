@@ -9,6 +9,7 @@ export const GET: APIRoute = async ({ site }) => {
     "/",
     "/photography/",
     "/photography/corporate-events/",
+    "/content/",
     "/data/",
     "/contact/",
     ...photos.map(galleryUrl),

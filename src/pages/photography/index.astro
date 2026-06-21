@@ -11,11 +11,6 @@ const pageCover = photos[0] ? getGalleryCover(entrySlug(photos[0]), photos[0].da
 const defaultPhotographyType = "corporate-private-events";
 const photographySections = [
   {
-    id: "all",
-    label: "All",
-    items: photos
-  },
-  {
     id: "corporate-private-events",
     label: "Corporate & private events",
     items: photos.filter((photo) => photo.data.photographyType === "corporate-private-events")
@@ -34,6 +29,11 @@ const photographySections = [
     id: "wedding-rom",
     label: "Wedding & ROM",
     items: photos.filter((photo) => photo.data.photographyType === "wedding-rom")
+  },
+  {
+    id: "all",
+    label: "All",
+    items: photos
   }
 ];
 ---

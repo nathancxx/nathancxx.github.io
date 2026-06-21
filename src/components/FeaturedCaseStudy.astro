@@ -1,0 +1,60 @@
+---
+import type { ContentWorkEntry } from "@lib/content";
+
+interface Props {
+  item: ContentWorkEntry;
+}
+
+const { item } = Astro.props;
+const platformLabels = {
+  instagram: "Instagram",
+  tiktok: "TikTok",
+  linkedin: "LinkedIn"
+};
+const hasMedia = Boolean(item.data.embedHtml || item.data.coverImage);
+---
+
+<section class="content-case-study" aria-labelledby="content-case-study-title">
+  <div class="content-section-rule"></div>
+  <div class="home-section-heading">
+    <p class="eyebrow">Featured case study</p>
+    <div>
+      <h2 id="content-case-study-title">{item.data.title}</h2>
+      <p>{item.data.summary || "A closer look at a content project with context, deliverables, and process."}</p>
+    </div>
+  </div>
+
+  <div class="case-study-grid">
+    <article class="case-study-window case-study-copy-window">
+      <div class="case-study-meta">
+        <span>{platformLabels[item.data.platform]}</span>
+        {item.data.role && <span>{item.data.role}</span>}
+      </div>
+      <slot />
+      {
+        item.data.services.length > 0 && (
+          <ul class="case-study-pills" aria-label="Services">
+            {item.data.services.map((service) => <li>{service}</li>)}
+          </ul>
+        )
+      }
+      {
+        item.data.externalUrl && (
+          <a class="button button-dark" href={item.data.externalUrl} target="_blank" rel="noreferrer">
+            View original post
+          </a>
+        )
+      }
+    </article>
+
+    {hasMedia && <aside class="case-study-window case-study-media-window" aria-label="Case study media">
+      {
+        item.data.embedHtml ? (
+          <div class="native-embed" set:html={item.data.embedHtml} />
+        ) : item.data.coverImage ? (
+          <img src={item.data.coverImage} alt={item.data.title} loading="lazy" />
+        ) : ""
+      }
+    </aside>}
+  </div>
+</section>

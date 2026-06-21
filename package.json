@@ -5,13 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
-    "build": "npm run validate && ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "build": "node scripts/build.mjs",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
     "validate": "ASTRO_TELEMETRY_DISABLED=1 astro check && node scripts/validate-content.mjs",
     "import": "node importer/server.mjs",
     "import:magic": "node scripts/import-magic-directory.mjs",
-    "prebuild": "node scripts/import-magic-directory.mjs",
-    "sample-assets": "node scripts/create-sample-assets.mjs",
+    "social-copy": "node scripts/generate-social-copy.mjs",
     "check": "npm run validate"
   },
   "dependencies": {

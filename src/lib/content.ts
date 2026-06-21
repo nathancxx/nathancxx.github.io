@@ -2,6 +2,7 @@ import type { CollectionEntry } from "astro:content";
 
 export type PhotographyEntry = CollectionEntry<"photography">;
 export type DataProjectEntry = CollectionEntry<"data-projects">;
+export type ContentWorkEntry = CollectionEntry<"content-work">;
 
 export function published<T extends { data: { publishStatus?: string; date?: Date } }>(items: T[]) {
   return items
@@ -22,7 +23,7 @@ export function projectUrl(item: DataProjectEntry) {
   return `/data/project/${entrySlug(item)}/`;
 }
 
-export function entrySlug(item: PhotographyEntry | DataProjectEntry) {
+export function entrySlug(item: PhotographyEntry | DataProjectEntry | ContentWorkEntry) {
   return item.id.replace(/\.(md|mdx)$/, "");
 }
 

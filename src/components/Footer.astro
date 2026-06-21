@@ -1,0 +1,29 @@
+---
+import { navItems, site } from "@lib/site";
+---
+
+<footer class="site-footer" aria-labelledby="footer-title">
+  <div class="site-footer-inner">
+    <div class="footer-brand">
+      <h2 id="footer-title">{site.name}</h2>
+      <p>Corporate event photographer, content creator, data analyst, and curious builder.</p>
+    </div>
+
+    <nav class="footer-links" aria-label="Sitemap">
+      <p class="footer-label">Sitemap</p>
+      <a href="/">Home</a>
+      {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+
+    <div class="footer-links">
+      <p class="footer-label">Work together</p>
+      <a href={site.whatsappUrl}>Message on WhatsApp</a>
+      <a href={`mailto:${site.email}`}>Send an email</a>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {new Date().getFullYear()} {site.name}</p>
+      <p>Singapore</p>
+    </div>
+  </div>
+</footer>

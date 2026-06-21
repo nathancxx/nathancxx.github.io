@@ -1,27 +1,25 @@
 ---
-import { site } from "@lib/site";
+import { navItems, site } from "@lib/site";
 
 interface Props {
-  active?: "home" | "photography" | "data" | "contact";
+  active?: "home" | "photography" | "content" | "data" | "contact";
 }
 
 const { active = "home" } = Astro.props;
-const navItems = [
-  { id: "photography", href: "/photography/", label: "Photography" },
-  { id: "data", href: "/data/", label: "Data" },
-  { id: "contact", href: "/contact/", label: "Contact" }
-] as const;
 ---
 
 <header class="site-header" aria-label="Site header">
   <a class="brand" href="/" aria-label="Home">
-    <span class="brand-mark">K</span>
-    <span>
-      <strong>{site.name}</strong>
-      <small>Photography / Data</small>
-    </span>
+    <strong>{site.name}</strong>
   </a>
-  <nav class="nav" aria-label="Primary navigation">
+  <button class="nav-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="primary-navigation">
+    <span class="nav-toggle-label">Menu</span>
+    <span class="nav-toggle-icon" aria-hidden="true">
+      <span></span>
+      <span></span>
+    </span>
+  </button>
+  <nav class="nav" id="primary-navigation" aria-label="Primary navigation">
     {
       navItems.map((item) => (
         <a href={item.href} aria-current={active === item.id ? "page" : undefined}>
@@ -31,3 +29,37 @@ const navItems = [
     }
   </nav>
 </header>
+
+<script>
+  const navToggle = document.querySelector(".nav-toggle");
+  const primaryNavigation = document.querySelector("#primary-navigation");
+
+  function setMenuOpen(isOpen: boolean) {
+    navToggle?.setAttribute("aria-expanded", String(isOpen));
+    primaryNavigation?.classList.toggle("is-open", isOpen);
+    document.body.classList.toggle("nav-is-open", isOpen);
+  }
+
+  navToggle?.addEventListener("click", () => {
+    const isOpen = navToggle.getAttribute("aria-expanded") === "true";
+    setMenuOpen(!isOpen);
+  });
+
+  primaryNavigation?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => setMenuOpen(false));
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      setMenuOpen(false);
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    if (!navToggle?.contains(target) && !primaryNavigation?.contains(target)) {
+      setMenuOpen(false);
+    }
+  });
+</script>

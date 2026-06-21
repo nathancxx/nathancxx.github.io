@@ -1,0 +1,135 @@
+---
+import type { ContentWorkEntry } from "@lib/content";
+import { render } from "astro:content";
+
+interface Props {
+  items: ContentWorkEntry[];
+}
+
+const { items } = Astro.props;
+const renderedItems = await Promise.all(
+  items.map(async (item) => ({
+    item,
+    Body: (await render(item)).Content
+  }))
+);
+const normalizedCategory = (category: string) => (category === "adult-education" ? "corporate" : category);
+const categories = [
+  { id: "corporate", label: "Corporate" },
+  { id: "lifestyle", label: "Lifestyle" },
+  { id: "real-estate", label: "Real estate" },
+  { id: "all", label: "All" }
+] as const;
+const defaultCategory = "corporate";
+
+const platformLabels = {
+  instagram: "Instagram",
+  tiktok: "TikTok",
+  linkedin: "LinkedIn"
+};
+
+---
+
+<section class="content-showcase" aria-label="Social media examples" data-content-filter-root>
+  <div class="content-tabs" role="tablist" aria-label="Social media categories">
+    {
+      categories.map((category) => (
+        <button
+          class:list={["content-tab", { "is-active": category.id === defaultCategory }]}
+          type="button"
+          role="tab"
+          aria-selected={category.id === defaultCategory ? "true" : "false"}
+          data-content-filter={category.id}
+        >
+          {category.label}
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    items.length > 0 ? (
+      <div class="content-embed-grid">
+        {
+          renderedItems.map(({ item, Body }) => (
+            <article
+              class="content-embed-card"
+              data-content-card
+              data-category={normalizedCategory(item.data.socialCategory)}
+              hidden={normalizedCategory(item.data.socialCategory) !== defaultCategory}
+            >
+              <div class="content-embed-window">
+                {
+                  item.data.embedHtml ? (
+                    <div class="native-embed" set:html={item.data.embedHtml} />
+                  ) : item.data.coverImage ? (
+                    <a href={item.data.externalUrl || "#"} target="_blank" rel="noreferrer">
+                      <img src={item.data.coverImage} alt={item.data.title} loading="lazy" />
+                    </a>
+                  ) : item.data.externalUrl ? (
+                    <a class="content-direct-window" href={item.data.externalUrl} target="_blank" rel="noreferrer">
+                      Open {platformLabels[item.data.platform]} post
+                    </a>
+                  ) : (
+                    ""
+                  )
+                }
+              </div>
+              <div class="content-embed-text">
+                <h3>{item.data.title}</h3>
+                {
+                  item.data.metrics.length > 0 && (
+                    <div class="content-metrics" aria-label={`${item.data.title} metrics`}>
+                      {item.data.metrics.map((metric) => (
+                        <span>
+                          <strong>{metric.value}</strong>
+                          {metric.label}
+                        </span>
+                      ))}
+                    </div>
+                  )
+                }
+                <Body />
+                {
+                  item.data.externalUrl && (
+                    <a class="content-direct-link" href={item.data.externalUrl} target="_blank" rel="noreferrer">
+                      Open {platformLabels[item.data.platform]} post
+                    </a>
+                  )
+                }
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    ) : (
+      <p class="empty-gallery-note">Add content examples in <code>src/content/content-work/</code>.</p>
+    )
+  }
+</section>
+
+<script>
+  const contentFilterRoot = document.querySelector("[data-content-filter-root]");
+  const contentFilterButtons = Array.from(document.querySelectorAll<HTMLElement>("[data-content-filter]"));
+  const contentCards = Array.from(document.querySelectorAll<HTMLElement>("[data-content-card]"));
+
+  function selectContentFilter(category: string) {
+    contentFilterButtons.forEach((button) => {
+      const isActive = button.dataset.contentFilter === category;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-selected", String(isActive));
+    });
+
+    contentCards.forEach((card) => {
+      card.hidden = category !== "all" && card.dataset.category !== category;
+    });
+  }
+
+  if (contentFilterRoot) {
+    selectContentFilter("corporate");
+
+    contentFilterButtons.forEach((button) => {
+      button.addEventListener("click", () => selectContentFilter(button.dataset.contentFilter || "all"));
+    });
+  }
+</script>

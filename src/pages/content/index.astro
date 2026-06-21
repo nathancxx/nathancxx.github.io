@@ -1,0 +1,39 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import ContentEmbedGrid from "@components/ContentEmbedGrid.astro";
+import FeaturedCaseStudy from "@components/FeaturedCaseStudy.astro";
+import ContactSection from "@components/ContactSection.astro";
+import { published } from "@lib/content";
+
+const contentItems = published(await getCollection("content-work"));
+const embedItems = contentItems.filter((item) => item.data.contentType === "embed");
+const caseStudies = contentItems.filter((item) => item.data.contentType === "case-study");
+const featuredCaseStudy = caseStudies.find((item) => item.data.featured) || caseStudies[0];
+const renderedCaseStudy = featuredCaseStudy ? await render(featuredCaseStudy) : undefined;
+const CaseStudyBody = renderedCaseStudy?.Content;
+const pageCover = featuredCaseStudy?.data.coverImage || embedItems.find((item) => item.data.coverImage)?.data.coverImage;
+---
+
+<BaseLayout title="Social media" description="Social media content and event storytelling portfolio." active="content" image={pageCover}>
+  <section class="page-hero content-page-hero" aria-labelledby="content-title">
+    <p class="eyebrow">Social media showcase</p>
+    <h1 id="content-title">Social media with event instincts.</h1>
+    <p>Short-form videos, post-ready coverage, and people-led stories for events, brands, and communities.</p>
+  </section>
+
+  <ContentEmbedGrid items={embedItems} />
+
+  {
+    featuredCaseStudy && CaseStudyBody && (
+      <FeaturedCaseStudy item={featuredCaseStudy}>
+        <CaseStudyBody />
+      </FeaturedCaseStudy>
+    )
+  }
+
+  <ContactSection />
+
+  <script is:inline async src="https://www.instagram.com/embed.js"></script>
+  <script is:inline async src="https://www.tiktok.com/embed.js"></script>
+</BaseLayout>

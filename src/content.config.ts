@@ -23,6 +23,21 @@ const photographyType = z.preprocess(
       : "corporate-private-events",
   z.enum(["corporate-private-events", "stage-work", "photoshoot", "wedding-rom"])
 );
+const contentType = z.preprocess(
+  (value) => (["embed", "case-study"].includes(String(value)) ? value : "embed"),
+  z.enum(["embed", "case-study"])
+);
+const contentPlatform = z.preprocess(
+  (value) => (["instagram", "tiktok", "linkedin"].includes(String(value)) ? value : "instagram"),
+  z.enum(["instagram", "tiktok", "linkedin"])
+);
+const socialCategory = z.preprocess(
+  (value) => {
+    if (String(value) === "adult-education") return "corporate";
+    return ["corporate", "real-estate", "lifestyle"].includes(String(value)) ? value : "lifestyle";
+  },
+  z.enum(["corporate", "real-estate", "lifestyle"])
+);
 const looseDate = z.preprocess((value) => {
   const date = value instanceof Date ? value : new Date(String(value || ""));
   return Number.isNaN(date.getTime()) ? new Date(0) : date;
@@ -60,6 +75,9 @@ const photography = defineCollection({
     googlePhotosUrl: optionalString,
     summary: optionalString,
     description: optionalString,
+    guidedContext: optionalString,
+    platformCaption: optionalString,
+    autoSummary: looseBoolean.default(true),
     services: stringArray.default([]),
     tags: stringArray.default([]),
     testimonial: optionalString,
@@ -84,7 +102,33 @@ const dataProjects = defineCollection({
   })
 });
 
+const contentWork = defineCollection({
+  type: "content",
+  schema: z.object({
+    title: stringOrDefault("Untitled content piece"),
+    date: looseDate.default(new Date(0)),
+    contentType,
+    platform: contentPlatform,
+    socialCategory,
+    featured: looseBoolean.default(false),
+    publishStatus,
+    summary: optionalString,
+    guidedContext: optionalString,
+    platformCaption: optionalString,
+    autoSummary: looseBoolean.default(true),
+    embedHtml: optionalString,
+    externalUrl: optionalString,
+    coverImage: optionalString,
+    client: optionalString,
+    role: optionalString,
+    services: stringArray.default([]),
+    metrics: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
+    tags: stringArray.default([])
+  })
+});
+
 export const collections = {
   photography,
-  "data-projects": dataProjects
+  "data-projects": dataProjects,
+  "content-work": contentWork
 };
