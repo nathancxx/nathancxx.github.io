@@ -1,7 +1,7 @@
 ---
 # photographyType choices: corporate-private-events | stage-work | photoshoot | wedding-rom
 generatedTitle: Polished Corporate Event Coverage
-date: 2026-06-21
+date: 2026-06-24
 category: Photography
 section: corporate-events
 photographyType: corporate-private-events

@@ -128,10 +128,20 @@ const platformLabels = {
   }
 
   if (contentFilterRoot) {
-    selectContentFilter("corporate");
+    const categoryFromUrl = new URLSearchParams(window.location.search).get("category") || window.location.hash.replace("#", "");
+    const validCategory = contentFilterButtons.some((button) => button.dataset.contentFilter === categoryFromUrl)
+      ? categoryFromUrl
+      : "corporate";
+    selectContentFilter(validCategory);
 
     contentFilterButtons.forEach((button) => {
-      button.addEventListener("click", () => selectContentFilter(button.dataset.contentFilter || "all"));
+      button.addEventListener("click", () => {
+        const category = button.dataset.contentFilter || "all";
+        selectContentFilter(category);
+        const url = new URL(window.location.href);
+        url.searchParams.set("category", category);
+        history.replaceState(null, "", url);
+      });
     });
   }
 </script>

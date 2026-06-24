@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/BaseLayout.astro";
 import ContactSection from "@components/ContactSection.astro";
 import DataFeatureCard from "@components/DataFeatureCard.astro";
+import HomeSocialHighlights from "@components/HomeSocialHighlights.astro";
 import WorkGrid from "@components/WorkGrid.astro";
 import { entrySlug, featured, published } from "@lib/content";
 import { getGalleryCover } from "@lib/gallery-images";
@@ -10,8 +11,10 @@ import { site } from "@lib/site";
 
 const photos = published(await getCollection("photography"));
 const projects = published(await getCollection("data-projects"));
+const contentItems = published(await getCollection("content-work"));
 const latestPhotos = photos.slice(0, 2);
 const featuredProject = featured(projects, 1)[0];
+const socialHighlights = contentItems.filter((item) => item.data.contentType === "embed");
 const pageCover = latestPhotos[0] ? getGalleryCover(entrySlug(latestPhotos[0]), latestPhotos[0].data.coverImage, latestPhotos[0].data.images) : "";
 ---
 
@@ -22,7 +25,7 @@ const pageCover = latestPhotos[0] ? getGalleryCover(entrySlug(latestPhotos[0]), 
         <h1 id="hero-title">Hi, I'm Keith.</h1>
       </div>
       <ul class="identity-list" aria-label="Short description">
-        <li>Corporate event photographer</li>
+        <li>Event photographer</li>
         <li>Data analyst</li>
         <li>Curious Builder</li>
       </ul>
@@ -57,6 +60,8 @@ const pageCover = latestPhotos[0] ? getGalleryCover(entrySlug(latestPhotos[0]), 
     <WorkGrid items={latestPhotos} />
   </section>
 
+  <HomeSocialHighlights items={socialHighlights} />
+
   {
     featuredProject && (
       <section class="home-section data-work" aria-labelledby="data-work-title">
@@ -74,4 +79,7 @@ const pageCover = latestPhotos[0] ? getGalleryCover(entrySlug(latestPhotos[0]), 
   }
 
   <ContactSection />
+
+  <script is:inline async src="https://www.instagram.com/embed.js"></script>
+  <script is:inline async src="https://www.tiktok.com/embed.js"></script>
 </BaseLayout>

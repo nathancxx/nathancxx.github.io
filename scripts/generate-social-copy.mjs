@@ -372,10 +372,10 @@ function parseOpenAIText(data, json, task) {
 }
 
 function sanitizeGeneratedTitle(value) {
-  const title = cleanString(value)
+  const title = collapseRepeatedTitle(cleanString(value)
     .replace(/^["'“”‘’]+|["'“”‘’.]+$/g, "")
     .replace(/\s+/g, " ")
-    .trim();
+    .trim());
 
   if (!title) return "";
   if (isPlaceholderTitle(title)) return "";
@@ -383,6 +383,17 @@ function sanitizeGeneratedTitle(value) {
   if (words.length < 2 || words.length > 10) return "";
   if (/[.!?]$/.test(title)) return "";
   return title;
+}
+
+function collapseRepeatedTitle(title) {
+  const words = cleanString(title).split(/\s+/).filter(Boolean);
+  if (words.length < 4 || words.length % 2 !== 0) return cleanString(title);
+
+  const midpoint = words.length / 2;
+  const firstHalf = words.slice(0, midpoint).join(" ").toLowerCase();
+  const secondHalf = words.slice(midpoint).join(" ").toLowerCase();
+
+  return firstHalf === secondHalf ? words.slice(0, midpoint).join(" ") : cleanString(title);
 }
 
 function extractResponseText(json) {
